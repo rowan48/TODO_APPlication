@@ -1,8 +1,10 @@
 from flask import Flask, render_template,request,redirect,url_for
+from flask import Flask, jsonify, make_response
+#from routes.lstm_price_route import lstm_price_blueprint
+#from routes.lstm_price_route import lstm_price_blueprint
+# from flask_cors import CORS, cross_origin
 import json
 import simplejson as json
-#from flask.wrappers import JSONMixin
-#from flask.wrappers import JSONMixin # For flask implementation    
 from bson import ObjectId # For ObjectId to work  
 from bson.json_util import dumps, loads
 from pymongo import MongoClient    
@@ -11,9 +13,20 @@ from time import time
 import redis
 
 
+
+
     
 app = Flask(__name__) 
+# cors = CORS(app, resources={r"*": {"origins": "*"}})
 
+
+#cors = CORS(app)
+
+#CORS(app, origins=[“http://localhost:8080/”])
+
+#cors = CORS(server , resources={r"/*": {"origins": "*", "allow_headers": "*", "expose_headers": "*"}})
+#server.register_blueprint(lstm_blueprint)
+#server.register_blueprint(lstm_price_blueprint)
 #cache = redis.Redis(host='127.0.0.1', port=6379)
 #def get_hit_count():
 #    retries = 5
@@ -39,7 +52,21 @@ app.config["MONGO_URI"] = "mongodb://127.0.0.1:27017"
 #with open('data.json', 'w') as file:
     #file.write(json_data)
 
+def enable_cors(fn):
+    """ Using enable_cors with any bottle router enables cors for that router
+        by enabling cors this router becomes accessable from front end
+        whenever the request method isn't `OPTIONS` the router itself runs.
+    """
+    def _enable_cors(*args, **kwargs):
+        response = make_response()
+        response.headers["Access-Control-Allow-Origin"] = "*"
+        response.headers["Access-Control-Allow-Methods"] = "GET, POST, PUT, OPTIONS, DELETE"
+        response.headers["Access-Control-Allow-Headers"] = "Origin, Accept, Content-Type, X-Requested-With, X-CSRF-Token"
 
+        if request.method != "OPTIONS":
+            return fn(*args, **kwargs)
+
+    return _enable_cors
    
     
 def redirect_url():
@@ -48,6 +75,7 @@ def redirect_url():
 		url_for('index')
   
 @app.route("/list")    #mylist
+@enable_cors()
 def lists ():    
     #Display the all Tasks    
     todos_l = todos.find()   
@@ -59,6 +87,7 @@ def lists ():
 
     #return render_template('index.html',a1=a1,todos=todos_l,t=title,h=heading)    
 @app.route('/list', methods=["POST"])
+@enable_cors()
 def post():
     #body of the post request 
     new_todo = {'addtodo' : request.json['addtodo']} 
