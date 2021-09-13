@@ -7,14 +7,15 @@
     <div class="d-flex mt-5">
       <input
         type="text"
-        v-model="task"
+        v-model= "task"
         placeholder="Enter task"
         class="w-100 form-control"
       />
-      <button class="btn btn-warning rounded-0" @click="submitTask">
-        SUBMIT
-      </button>
-      <button v-on:click.prevent="post">submitTask</button>
+     <!-- <form class="" method="post" @submit.prevent="postNow">
+      <input type="text" name="" value="" v-model="name">
+      <button type="submit" name="button">Submit</button>
+      </form>-->
+     <button class="btn btn-warning rounded-0" @click="submitTask">SUBMIT</button>
     </div>
 
     <!-- Task table -->
@@ -64,10 +65,17 @@
 </template>
 
 <script>
+import Vue from 'vue'
+import axios from 'axios'
+import VueAxios from 'vue-axios'
+Vue.use(VueAxios, axios)
+//const baseURL = " http://127.0.0.1:5000/list"
+//axios.defaults.headers.common['Access-Control-Allow-Origin'] = '*'
+
 export default {
-  name: "todoapp",
+  name: "todo",
   props: {
-    msg: String,
+    eindex: Object,
   },
   data() {
     return {
@@ -76,27 +84,41 @@ export default {
       statuses: ["to-do", "in-progress", "finished"],
       /* Status could be: 'to-do' / 'in-progress' / 'finished' */
       tasks: [
-        {
-          index: 1,
-          name: "buy vegetables.",
-          status: "to-do",
-        },
-        {
-          index: 2,
-          name: "study for 1 hour.",
-          status: "in-progress",
-        },
-        {
-          index: 3,
-          name: "sleep.",
-          status: "finished",
-        },
       ],
     };
   },
-  methods: {
-        methods: {
-    
+  created(){
+    axios
+        .get('http://127.0.0.1:5000/list')
+        .then (response=>{
+          console.log(response.data)
+        })
+        .catch(error=>{
+          console.log('There was an error'+error.response)
+        })
+  },
+  mounted:function(){
+  },
+  testMethod () {
+      axios.post('http://127.0.0.1:5000/action')
+      .then(function (response) {
+        alert (response.data)
+        this.addtodo=''
+        this.id++
+
+
+      })
+      .catch(function (error) {
+        alert(error);
+      });
+    },
+
+  methods : {
+    //async addTodo() {
+      //const res = await axios.post(baseURL, { name: this.addtodo })//this.!!
+      //this.tasks = [...this.tasks, res.data]
+      //this.tasks = ''//this.!
+    //},
     /**
      * Capitalize first character
      */
@@ -104,7 +126,8 @@ export default {
       return str.charAt(0).toUpperCase() + str.slice(1);
     },
     /**
-     * Change status of task by index
+     * Ch   
+     *    ange status of task by index
      */
     changeStatus(index) {
       let newIndex = this.statuses.indexOf(this.tasks[index].status);
@@ -114,9 +137,14 @@ export default {
     /**
      * Deletes task by index
      */
-     deleteTask(index) {
-      this.tasks.splice(index, 1);
-    },
+    //deleteTask(index) {
+      //axios
+           //.delete('http://127.0.0.1:5000/')
+           //.then(response => {
+                //this.tasks.splice(index, 1)
+                //console.log(this.tasks)
+           //});
+    //},
     /**
      * Edit task
      */
@@ -129,21 +157,48 @@ export default {
      */
     submitTask() {
       if (this.task.length === 0) return;
+    
       /* We need to update the task */
       if (this.editedTask != null) {
         this.tasks[this.editedTask].name = this.task;
         this.editedTask = null;
+        Vue.axios.put('http//127.0.0.1:5000/')
+
       } else {
         /* We need to add new task */
-        this.tasks.push({
-          name: this.task,
-          status: "todo",
-        });
+        var edata ={
+          'title': this.tasks,
+          'status': false,
+          'editing': false
+        }
+        axios.post('http://127.0.0.1:5000/list',edata)
+        .then(function (response) {
+              alert (response.data)
+              this.tasks.push({
+               name: this.task,
+               status: "todo",
+             });
+              this.tasks='',
+              this.id++
+        })
       }
-      this.task = "";
     },
   },
-};
+      //};
+       // this.tasks.push({
+          //name: this.task,
+          //status: "todo",
+        //}):
+       //}hnaa
+      //Vue.axios.post('http//127.0.0.1:5000/', newEntry)
+        //.then(response => this.idForTodo = response.data.id)
+        //.then(this.todos.push(newEntry))
+      //this.task = "";
+      //this.idForTask++
+    //}
+  //},
+ };
+
 </script>
 
 <style scoped>
