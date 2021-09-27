@@ -89,7 +89,7 @@ export default {
   },
   created(){
     axios
-        .get('http://127.0.0.1:5000/list')
+        .get(' http://localhost:8080/list')
         .then (response=>{
           console.log(response.data)
         })
@@ -100,7 +100,7 @@ export default {
   mounted:function(){
   },
   testMethod () {
-      axios.post('http://127.0.0.1:5000/action')
+      axios.post(' http://localhost:8080/list')
       .then(function (response) {
         alert (response.data)
         this.addtodo=''
@@ -162,7 +162,7 @@ export default {
       if (this.editedTask != null) {
         this.tasks[this.editedTask].name = this.task;
         this.editedTask = null;
-        Vue.axios.put('http//127.0.0.1:5000/')
+        Vue.axios.put(' http://localhost:8080/list')
 
       } else {
         /* We need to add new task */
@@ -171,7 +171,7 @@ export default {
           'status': false,
           'editing': false
         }
-        axios.post('http://127.0.0.1:5000/list',edata)
+        axios.post(' http://localhost:8080/list',edata)
         .then(function (response) {
               alert (response.data)
               this.tasks.push({
